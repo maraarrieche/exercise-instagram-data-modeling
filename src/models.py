@@ -1,5 +1,6 @@
 import os
 import sys
+import enum
 from sqlalchemy import Column, ForeignKey, Integer, String, Enum
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import create_engine
@@ -27,14 +28,22 @@ class Follower(Base):
     id = Column(Integer, primary_key=True)
     user_from_id = Column(String(50), nullable=False)
     user_to_id = Column(String(250), nullable=False)
-    usuario = relationship(Usuario)
     usuario_id = Column(Integer, ForeignKey('usuario.id'))
+    usuario = relationship(Usuario)
+
+class type_media(enum.Enum):
+    photo = 'photo'
+    video = 'video'
+    story = 'story'
+    reel = 'reel'
 
 class Post(Base):
     __tablename__ = 'post'
 
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuario.id'))
+    type = Column(Enum(type_media), nullable=False, default=type_media.photo)
+    usario = relationship(Usuario)
   
 
 class Media(Base):
@@ -43,6 +52,7 @@ class Media(Base):
     id = Column(Integer, primary_key=True)
     url = Column(String(1000), nullable=False)
     post_id = Column(Integer, ForeignKey('post.id'))
+    post = relationship(Post)
     
 class Comment(Base):
     __tablename__ = 'comment'
@@ -51,7 +61,9 @@ class Comment(Base):
     comment_text = Column(String(2200), nullable=False)
     hashtag = Column(String(30), nullable=False)
     usuario_id = Column(Integer, ForeignKey('usuario.id'))
+    usuario = relationship(Usuario)
     post_id = Column(Integer, ForeignKey('post.id'))
+    post = relationship(Post)
 
 
 
